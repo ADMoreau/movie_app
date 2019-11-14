@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{%  block content  %}
+    <form action="/" method="POST">
+
+        {{ form.hidden_tag() }}
+
+        {{ form.search }}
+
+        {{ form.submit() }}
+    </form>
+{% endblock %}
+
+
+</html>
