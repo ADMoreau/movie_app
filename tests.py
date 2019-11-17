@@ -4,7 +4,24 @@ import app
 
 
 class MyTestCase(unittest.TestCase):
-    def test_something(self):
+
+    def setUp(self):
+        app.app.config['TESTING'] = True
+        app.app.config['WTF_CSRF_ENABLED'] = False
+        app.app.config['DEBUG'] = False
+
+        self.app = app.app.test_client()
+
+        self.assertEqual(app.app.debug, False)
+
+    def tearDown(self):
+        pass
+
+    def test_main_page(self):
+        response = self.app.get('/', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_searchIMDB(self):
 
         a = app.searchIMDB('ladder', movie=True)
         b = app.searchIMDB('ladder', movie=False)
@@ -12,6 +29,37 @@ class MyTestCase(unittest.TestCase):
         self.assertIsNotNone(a)
         self.assertIsNotNone(b)
         self.assertNotEqual(a, b)
+
+    def movie(self):
+        return self.app.get(
+            '/movie/ladder',
+            follow_redirects=True
+        )
+
+    def show(self):
+        return self.app.get(
+            '/show/ladder',
+            follow_redirects=True
+        )
+
+    def search(self):
+        return self.app.get(
+            '/search?query=ladder',
+            follow_redirects=True
+        )
+
+    def test_pages(self):
+        response = self.movie()
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'movie', response.data)
+
+        response = self.show()
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'tv series', response.data)
+
+        response = self.search()
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Ladder', response.data)
 
 
 if __name__ == '__main__':
