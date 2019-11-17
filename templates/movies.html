@@ -1,15 +1,39 @@
+{% extends 'bootstrap/base.html' %}
+
+<html>
+<head>
+<style>
+.pagination-page-info {
+    padding: .6em;
+    padding-left: 0;
+    width: 40em;
+    margin: .5em;
+    margin-left: 0;
+    font-size: 12px;
+}
+.pagination-page-info b {
+    color: black;
+    background: #6aa6ed;
+    padding-left: 2px;
+    padding: .1em .25em;
+    font-size: 150%;
+}
+</style>
+</head>
+
 {% block content %}
-    {% for movie in movies %}
-        <table>
-            <tr valign="top">
-                <td>{{ movie }}</td>
-            </tr>
-        </table>
-    {% endfor %}
-    {% if prev_url %}
-    <a href="{{ prev_url }}">Previous</a>
-    {% endif %}
-    {% if next_url %}
-    <a href="{{ next_url }}">Next</a>
-    {% endif %}
+    {{ pagination.info }}
+    {{ pagination.links }}
+    <table>
+      <tbody>
+        {% for movie in movies %}
+          <tr valign="top">
+              <td>{{ loop.index + pagination.skip }}</td>
+              <td>{{ movie }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 {% endblock %}
+
+</html>
