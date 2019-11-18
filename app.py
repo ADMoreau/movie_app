@@ -6,10 +6,9 @@ from flask_bootstrap import Bootstrap
 from flask_paginate import Pagination, get_page_parameter
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
-from config import secret_access_key
 
 application = Flask(__name__)
-application.secret_key = secret_access_key
+application.secret_key = 'secret'
 bootstrap = Bootstrap(application)
 
 ia = imdb.IMDb()
