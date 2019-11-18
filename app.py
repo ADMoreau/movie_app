@@ -6,10 +6,11 @@ from flask_bootstrap import Bootstrap
 from flask_paginate import Pagination, get_page_parameter
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
+from config import secret_access_key
 
-app = Flask(__name__)
-app.secret_key = 'secret'
-bootstrap = Bootstrap(app)
+application = Flask(__name__)
+application.secret_key = secret_access_key
+bootstrap = Bootstrap(application)
 
 ia = imdb.IMDb()
 PER_PAGE = 4
@@ -21,6 +22,14 @@ class SearchForm(FlaskForm):
 
 
 def searchIMDB(s, movie=True):
+    '''
+    this function is designed to return the first entry based on similarity to the search term s, and whether or not you
+    are searching for a movie or a tv show
+
+    :param s: search term to use to query the IMDb database
+    :param movie: dictates whether to look for a movie or tv show
+    :return: JSON for the appropriate query
+    '''
     for entry in ia.search_movie(s):
         temp = xmltodict.parse(entry.asXML())
         temp = json.loads(json.dumps(temp))
@@ -30,32 +39,36 @@ def searchIMDB(s, movie=True):
             return temp
 
 
-@app.route('/movie/<id>')
+@application.route('/movie/<id>')
 def movie(id):
     return searchIMDB(id, movie=True)
 
 
-@app.route('/show/<id>')
+@application.route('/show/<id>')
 def show(id):
     return searchIMDB(id, movie=False)
 
 
-@app.route('/search')
+@application.route('/search')
 def search():
+    # get the query title
     s = request.args['query']
 
     search_check = False
     q = request.args.get('q')
     if q:
         search_check = True
-
+    # get the page number for pagination purposes
     page = request.args.get(get_page_parameter(), type=int, default=1)
     offset = (page - 1) * PER_PAGE
 
     movies = []
     imdb_search = ia.search_movie(s)
-    for entry in imdb_search[offset:offset+PER_PAGE]:
+    # get the proper number of search results from the query based on the PER PAGE variable
+    for entry in imdb_search[offset:offset + PER_PAGE]:
+        # first get all information as xml and dump to a dictionary
         temp = xmltodict.parse(entry.asXML())
+        # then convert the dictionary to a string and then json
         movies.append(json.loads(json.dumps(temp)))
 
     pagination = Pagination(page=page,
@@ -71,7 +84,7 @@ def search():
                            pagination=pagination)
 
 
-@app.route('/', methods=['GET', 'POST'])
+@application.route('/', methods=['GET', 'POST'])
 def home():
     form = SearchForm()
     if form.validate_on_submit():
@@ -82,4 +95,4 @@ def home():
 
 
 if __name__ == '__main__':
-    app.run()
+    application.run()
