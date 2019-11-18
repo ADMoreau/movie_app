@@ -6,13 +6,13 @@ import app
 class MyTestCase(unittest.TestCase):
 
     def setUp(self):
-        app.app.config['TESTING'] = True
-        app.app.config['WTF_CSRF_ENABLED'] = False
-        app.app.config['DEBUG'] = False
+        app.application.config['TESTING'] = True
+        app.application.config['WTF_CSRF_ENABLED'] = False
+        app.application.config['DEBUG'] = False
 
-        self.app = app.app.test_client()
+        self.app = app.application.test_client()
 
-        self.assertEqual(app.app.debug, False)
+        self.assertEqual(app.application.debug, False)
 
     def tearDown(self):
         pass
